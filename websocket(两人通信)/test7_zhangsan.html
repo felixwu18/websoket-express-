@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="zh-ch">
+
+<head>
+    <meta charset="UTF-8">
+    <title>张三</title>
+    <style>
+        #mes {
+            height: 400px;
+            width: 500px;
+            border: 1px solid red;
+        }
+
+        textarea {
+            width: 400px;
+        }
+    </style>
+</head>
+
+<body>
+    <button id="con">链接服务器</button>
+    <button id="close">关闭服务器</button>
+    <h1>你的身份：张三</h1>
+    <div id="mes"></div><br>
+    <textarea placeholder="请输入要发送的信息"></textarea><br>
+    <button id="send">发送</button>
+    <script>
+        var mes = document.getElementById("mes");
+        var send = document.getElementById("send");
+        var con = document.getElementById("con");
+        var close = document.getElementById("close");
+        var socket = null; //websocket链接对象
+
+        //开启链接
+        con.onclick = function () {
+            if (window.WebSocket) { //当设备支持websocket时，开始建立客户端链接
+                socket = new WebSocket('ws://127.0.0.1:8081');
+                // 连接建立时触发
+                socket.onopen = function (e) {
+                    socket.send("张三");
+                    // alert("连接服务器成功");
+                    con.innerText = "已连接";
+                }
+                // 接收到服务端数据时触发
+                socket.onmessage = function (e) {
+                    mes.innerHTML += e.data; //将收到的信息放入信息框
+                }
+                //当链接被服务端关闭时触发
+                socket.onclose = function (e) {
+                    alert("服务器关闭");
+                    con.innerText = "链接服务器";
+                }
+                // 当服务端通信发生错误时触发
+                socket.onerror = function () {
+                    alert("服务器连接出错");
+                    con.innerText = "链接服务器";
+                }
+            }
+            else alert("你的设备不支持websocket！");
+        }
+
+        //当点击发送按钮时，发送内容
+        send.onclick = function () {
+            //获取输入框内容
+            var content = document.getElementsByTagName("textarea")[0];
+            //放入到信息框
+            var sendContent = "张三:&nbsp" + (new Date()) + "<br/><br/>&nbsp&nbsp" + content.value + "<br/><br/>";
+            mes.innerHTML += sendContent; //将收到的信息放入信息框
+            //发送输入的内容
+            socket.send(sendContent);
+        }
+
+        //当点击关闭链接时，关闭socket链接
+        close.onclick = function () {
+            socket.close();
+        }
+    </script>
+</body>
+
+</html>

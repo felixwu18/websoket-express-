@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Socket</title>
+</head>
+
+<body>
+
+    <script>
+ /*
+    以下 API 用于创建 WebSocket 对象。
+    var Socket = new WebSocket(url, [protocol] );
+    以上代码中的第一个参数 url, 指定连接的 URL。第二个参数 protocol 是可选的，指定了可接受的子协议。
+ */
+
+        if (window.WebSocket) { //当设备支持websocket时，开始建立客户端链接
+            var socket = new WebSocket('ws://127.0.0.1:8081');
+            console.log(socket)
+            // 连接建立时触发
+            socket.onopen = function (e) {
+                console.log("连接服务器成功");
+                socket.send("你好，服务端，我已经成功连上你了"); //主动向服务端发起消息
+            }
+            // 接收到服务端数据时触发
+            socket.onmessage = function (e) {
+                console.info("服务端发送内容：", e.data); //在这里，e表示服务端发送而来的内容
+            }
+
+            //当链接被服务端关闭时触发
+            socket.onclose = function (e) {
+                console.log("服务器关闭");
+            }
+            // 当服务端通信发生错误时触发
+            socket.onerror = function () {
+                console.log("连接出错");
+            }
+        }
+        else console.info("你的设备不支持websocket！")
+    </script>
+</body>
+
+</html>
